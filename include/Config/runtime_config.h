@@ -15,3 +15,6 @@ constexpr char STORAGE_NAMESPACE[] = "main";
 constexpr char STORAGE_KEY_EFFECT[] = "eff";
 constexpr char STORAGE_KEY_BRIGHT[] = "brt";
 constexpr char STORAGE_KEY_SPEED[] = "spd";
+
+// Effects
+constexpr int EFFECTS_COUNT = 2;

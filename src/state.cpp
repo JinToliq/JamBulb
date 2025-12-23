@@ -3,16 +3,11 @@
 #include <Preferences.h>
 #include <algorithm>
 
-void State::load(int effectCount) {
+void State::load() {
     Preferences prefs;
     prefs.begin(STORAGE_NAMESPACE, true);
 
-    unsigned int storedEffect = prefs.getUInt(STORAGE_KEY_EFFECT, 0);
-    if (effectCount > 0) 
-        currentEffectIndex = std::min(static_cast<int>(storedEffect), effectCount - 1);
-    else 
-        currentEffectIndex = static_cast<int>(storedEffect);
-
+    currentEffectIndex = prefs.getUInt(STORAGE_KEY_EFFECT, 0);
     speed = prefs.getFloat(STORAGE_KEY_SPEED, SPEED_DEFAULT);
     brightness = prefs.getUChar(STORAGE_KEY_BRIGHT, BRIGHTNESS_DEFAULT);
     prefs.end();
