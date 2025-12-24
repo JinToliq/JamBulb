@@ -2,12 +2,13 @@
 #include <FastLED.h>
 
 #include "debug.h"
-#include "Config/pins.h"
-#include "Config/runtime_config.h"
-#include "Controls/debounced_button.h"
-#include "Controls/simple_encoder.h"
+#include "input.h"
+#include "web_interface.h"
 #include "matrix_map.h"
 #include "state.h"
+#include "time_state.h"
+#include "Config/pins.h"
+#include "Config/runtime_config.h"
 #include "Effects/effect.h"
 #include "Effects/rainbow_effect.h"
 #include "Effects/rainbow_rain_effect.h"
@@ -15,10 +16,9 @@
 static CRGB leds[NUM_LEDS];
 static State state;
 
+Input input(BUTTON_PIN, ENCODER_PIN_A, ENCODER_PIN_B);
 MatrixMap matrixMap(NUM_LEDS_X, NUM_LEDS_Y);
-DebouncedButton effectButton(BUTTON_PIN);
-SimpleEncoder effectEncoder(ENCODER_PIN_A, ENCODER_PIN_B);
-
+WebInterface webInterface(input, state);
 Effect* currentEffect = nullptr;
 
 Effect* createCurrentEffect() {
@@ -46,6 +46,33 @@ void setNextEffect() {
     DBG_PRINTF("Set effect %d\n", state.currentEffectIndex);
 }
 
+void setBrightness(int brightness)
+{
+    if (brightness < BRIGHTNESS_MIN) 
+        brightness = BRIGHTNESS_MIN;
+    else if (brightness > BRIGHTNESS_MAX) 
+        brightness = BRIGHTNESS_MAX;
+
+    state.brightness = static_cast<uint8_t>(brightness);
+    state.save();
+
+    FastLED.setBrightness(state.brightness);
+    DBG_PRINTF("Brightness set: %u\n", state.brightness);
+}
+
+void setSpeed(float speed)
+{
+    if (speed < SPEED_MIN) 
+        speed = SPEED_MIN;
+    else if (speed > SPEED_MAX) 
+        speed = SPEED_MAX;
+
+    state.speed = speed;
+    state.save();
+
+    DBG_PRINTF("Speed set: %.2f\n", state.speed);    
+}
+
 void SetupLed()
 {
     FastLED.addLeds<NEOPIXEL, LED_PIN>(leds, NUM_LEDS);
@@ -62,6 +89,7 @@ void setup()
     SetupLed();
 
     state.load();
+    webInterface.begin();
     FastLED.setBrightness(state.brightness);
     currentEffect = createCurrentEffect();
     currentEffect->Reset();
@@ -69,43 +97,31 @@ void setup()
 
 void loop()
 {
-    Time::Update(millis());
-    auto isButtonChanged = effectButton.update();
-    auto encoderDelta = effectEncoder.readDelta();
+    TimeState::Update(millis());
+    input.update();
+    auto events = input.get();
 
-    if (encoderDelta != 0) {
-        if (effectButton.isPressed()) {
-            // adjust speed
-            float step = 0.05f * abs(encoderDelta);
-            if (encoderDelta > 0) state.speed += step;
-            else state.speed -= step;
-            if (state.speed < SPEED_MIN) state.speed = SPEED_MIN;
-            if (state.speed > SPEED_MAX) state.speed = SPEED_MAX;
-            DBG_PRINTF("Speed: %.2f\n", state.speed);
-            state.save();
-        } else {
-            // adjust brightness
-            int step = 4 * encoderDelta;
-            int b = (int)state.brightness + step;
-            if (b < BRIGHTNESS_MIN) b = BRIGHTNESS_MIN;
-            if (b > BRIGHTNESS_MAX) b = BRIGHTNESS_MAX;
-            state.brightness = static_cast<uint8_t>(b);
-            FastLED.setBrightness(state.brightness);
-            DBG_PRINTF("Brightness: %u\n", state.brightness);
-            state.save();
-        }
+    if (events.isNextEffectRequested) {
+        setNextEffect();
     }
 
-    static bool lastBtn = false;
-    if (isButtonChanged) {
-        bool newBtn = effectButton.isPressed();
-        if (!newBtn && lastBtn)
-            setNextEffect();
-    
-        lastBtn = newBtn;
+    if (events.brightnessDelta != 0) {
+        setBrightness(events.brightnessDelta + state.brightness);   
     }
 
-    float deltaTime = Time::GetDeltaTimeSec() * state.speed;
+    if (events.speedDelta != 0.0f) {
+        setSpeed(state.speed + events.speedDelta);
+    }
+
+    if (events.hasNewBrightness) {
+        setBrightness(events.newBrightness);
+    }
+
+    if (events.hasNewSpeed) {
+        setSpeed(events.newSpeed);
+    }
+
+    float deltaTime = TimeState::GetDeltaTimeSec() * state.speed;
     if (currentEffect != nullptr) {
         currentEffect->Update(deltaTime);
         currentEffect->Render(leds, matrixMap);

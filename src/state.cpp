@@ -10,6 +10,7 @@ void State::load() {
     currentEffectIndex = prefs.getUInt(STORAGE_KEY_EFFECT, 0);
     speed = prefs.getFloat(STORAGE_KEY_SPEED, SPEED_DEFAULT);
     brightness = prefs.getUChar(STORAGE_KEY_BRIGHT, BRIGHTNESS_DEFAULT);
+    wifiPassword = prefs.getString(STORAGE_KEY_WIFI_PASS, "password123");
     prefs.end();
 }
 
@@ -19,5 +20,6 @@ void State::save() const {
     prefs.putUInt(STORAGE_KEY_EFFECT, static_cast<unsigned int>(currentEffectIndex));
     prefs.putFloat(STORAGE_KEY_SPEED, speed);
     prefs.putUChar(STORAGE_KEY_BRIGHT, brightness);
+    prefs.putString(STORAGE_KEY_WIFI_PASS, wifiPassword);
     prefs.end();
 }

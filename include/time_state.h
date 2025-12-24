@@ -1,12 +1,12 @@
 #pragma once
 
-class Time {
+class TimeState {
     private:
     static unsigned long timeMs;
     static float deltaTimeSec;
 
     public:
-    Time() = delete;
+    TimeState() = delete;
 
     static void Update(unsigned long millis);
     static const float GetDeltaTimeSec() { return deltaTimeSec; }
