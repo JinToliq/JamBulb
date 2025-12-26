@@ -3,11 +3,17 @@
 #include "Config/runtime_config.h"
 
 Input::Input(uint8_t buttonPin, uint8_t encoderPinA, uint8_t encoderPinB)
-    : _button(buttonPin, BTN_DEBOUNCE_MS, BTN_CLICK_THRESHOLD_MS), _encoder(encoderPinA, encoderPinB) {
+    : _button(buttonPin, BTN_DEBOUNCE_MS, BTN_CLICK_THRESHOLD_MS, BTN_DOUBLECLICK_THRESHOLD_MS), _encoder(encoderPinA, encoderPinB) {
 }
 
 void Input::update() {
     _button.update();
+
+    if (_button.isDoubleClicked())
+    {
+        setSwitchIsActive();
+        return;
+    }
 
     if (_button.isClicked()) {
         setNextEffectRequest();
@@ -29,6 +35,11 @@ void Input::update() {
 InputEvents Input::get() {
     InputEvents events;
     
+    if (_switchIsActive) {
+        _switchIsActive = false;
+        events.switchIsActive = true;
+    }
+
     if (_isNextEffectRequested) {
         _isNextEffectRequested = false;
         events.isNextEffectRequested = true;
@@ -64,6 +75,10 @@ InputEvents Input::get() {
     }
 
     return events;
+}
+
+void Input::setSwitchIsActive() {
+    _switchIsActive = true;
 }
 
 void Input::setNextEffectRequest() {

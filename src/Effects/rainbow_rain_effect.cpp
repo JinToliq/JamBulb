@@ -19,7 +19,7 @@ void RainbowRainEffect::Render(CRGB *leds, const MatrixMap &map) {
     for (int y = 0; y < m_height; ++y) {
         // top (m_height-1) should have a different hue than bottom (0)
         uint8_t rowHue = static_cast<uint8_t>((255 * (m_height - 1 - y)) / (m_height - 1));
-        uint8_t hueShift = static_cast<uint8_t>(m_phase * 255);
+        uint8_t hueShift = static_cast<uint8_t>(m_phase * 255 * 6);
         uint8_t hue = rowHue + hueShift;
         for (int x = 0; x < m_width; ++x) {
             uint16_t i = map.index(x, y);

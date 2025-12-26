@@ -5,6 +5,7 @@
 #include "Controls/simple_encoder.h"
 
 struct InputEvents {
+    bool switchIsActive = false;
     bool isNextEffectRequested = false;
     int brightnessDelta = 0;
     float speedDelta = 0.0f;
@@ -22,6 +23,7 @@ public:
     
     void update();
     InputEvents get();
+    void setSwitchIsActive();
     void setNextEffectRequest();
     void setBrightness(uint8_t value);
     void setSpeed(float value);
@@ -33,6 +35,7 @@ private:
     int _brightnessDelta = 0;
     float _speedDelta = 0.0f;
 
+    std::atomic<bool> _switchIsActive{false};
     std::atomic<bool> _isNextEffectRequested{false};
     std::atomic<bool> _isBrightnessRequested{false};
     std::atomic<uint8_t> _brightness{0};

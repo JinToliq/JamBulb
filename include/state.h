@@ -9,6 +9,7 @@ class State {
 public:
     State() = default;
 
+    bool isActive = true;
     unsigned int currentEffectIndex = 0;
     float speed = SPEED_DEFAULT;
     uint8_t brightness = BRIGHTNESS_DEFAULT;

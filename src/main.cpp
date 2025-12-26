@@ -12,6 +12,9 @@
 #include "Effects/effect.h"
 #include "Effects/rainbow_effect.h"
 #include "Effects/rainbow_rain_effect.h"
+#include "Effects/fire_effect.h"
+#include "Effects/lava_effect.h"
+#include "Effects/matrix_effect.h"
 
 static CRGB leds[NUM_LEDS];
 static State state;
@@ -28,6 +31,12 @@ Effect* createCurrentEffect() {
         return new RainbowEffect(NUM_LEDS_X, NUM_LEDS_Y);
     case 1:
         return new RainbowRainEffect(NUM_LEDS_X, NUM_LEDS_Y);
+    case 2:
+        return new FireEffect(NUM_LEDS_X, NUM_LEDS_Y);
+    case 3:
+        return new LavaEffect(NUM_LEDS_X, NUM_LEDS_Y);
+    case 4:
+        return new MatrixEffect(NUM_LEDS_X, NUM_LEDS_Y);
     default:
         return new RainbowEffect(NUM_LEDS_X, NUM_LEDS_Y);
     }
@@ -93,6 +102,8 @@ void setup()
     FastLED.setBrightness(state.brightness);
     currentEffect = createCurrentEffect();
     currentEffect->Reset();
+
+    DBG_PRINTLN("Startup complete");
 }
 
 void loop()
@@ -100,6 +111,29 @@ void loop()
     TimeState::Update(millis());
     input.update();
     auto events = input.get();
+
+    if (events.switchIsActive) {
+        state.isActive = !state.isActive;
+        if (!state.isActive)
+        {
+            FastLED.clear();
+            FastLED.setBrightness(0);
+            FastLED.show();
+
+            DBG_PRINTLN("Switched to INACTIVE state");
+            return;
+        }
+        else
+        {
+            FastLED.setBrightness(state.brightness);
+            DBG_PRINTLN("Switched to ACTIVE state");
+        }
+    }
+
+    if (!state.isActive) {
+        delay(5);
+        return;
+    }
 
     if (events.isNextEffectRequested) {
         setNextEffect();

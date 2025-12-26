@@ -18,7 +18,7 @@ constexpr char STORAGE_KEY_SPEED[] = "spd";
 constexpr char STORAGE_KEY_WIFI_PASS[] = "wifi_pass";
 
 // Effects
-constexpr int EFFECTS_COUNT = 2;
+constexpr int EFFECTS_COUNT = 5;
 constexpr int BRIGHTNESS_ENCODER_MULTIPLIER = 8;
 constexpr float SPEED_ENCODER_MULTIPLIER = 0.25f;
 

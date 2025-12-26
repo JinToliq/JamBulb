@@ -9,6 +9,7 @@ public:
     void update();
     bool isPressed() const { return _isPressed; }
     bool isClicked() const { return _isClicked; }
+    bool isDoubleClicked() const { return _isDoubleClicked; }
     bool changedThisFrame() const { return _changedThisFrame; }
 
 private:
@@ -18,13 +19,14 @@ private:
     const unsigned long _doubleClickThresholdMs;
     unsigned long _lastChangeMs;
     unsigned long _lastStableChangeMs;
-    unsigned long _lastClickMs;
-    unsigned long _lastHandledClickMs;
+    unsigned long _pendingClickMs;
 
     bool _changedThisFrame;
     bool _isPressed;
     bool _isClicked;
+    bool _isDoubleClicked;
     bool _lastRaw;
+    bool _waitingForDoubleClick;
 
     bool readRaw() const;
 };

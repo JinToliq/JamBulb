@@ -6,10 +6,11 @@ StatedButton::StatedButton(int pin, unsigned long debounceMs, unsigned long clic
     _pin(pin), 
     _debounceMs(debounceMs), 
     _clickThresholdMs(clickThresholdMs), 
-    _doubleClickThresholdMs(doubleClickThresholdMs) {
+    _doubleClickThresholdMs(doubleClickThresholdMs),
+    _pendingClickMs(0),
+    _waitingForDoubleClick(false) {
     pinMode(pin, INPUT_PULLUP);
     _isPressed = readRaw();
-    _lastClickMs = 0;
 }
 
 bool StatedButton::readRaw() const {
@@ -19,9 +20,17 @@ bool StatedButton::readRaw() const {
 void StatedButton::update() {
     _changedThisFrame = false;
     _isClicked = false;
+    _isDoubleClicked = false;
 
     auto raw = readRaw();
     auto now = millis();
+
+    if (_waitingForDoubleClick) {
+        if (now - _pendingClickMs >= _doubleClickThresholdMs) {
+            _isClicked = true;
+            _waitingForDoubleClick = false;
+        }
+    }
 
     if (raw == _isPressed)
         return;
@@ -41,7 +50,13 @@ void StatedButton::update() {
     {
         auto pressedDuration = now - _lastStableChangeMs;
         if (pressedDuration < _clickThresholdMs) {
-            _isClicked = true;
+            if (_waitingForDoubleClick) {
+                _isDoubleClicked = true;
+                _waitingForDoubleClick = false;
+            } else {
+                _pendingClickMs = now;
+                _waitingForDoubleClick = true;
+            }
         }
     }
 
