@@ -19,8 +19,8 @@ constexpr char STORAGE_KEY_WIFI_PASS[] = "wifi_pass";
 
 // Effects
 constexpr int EFFECTS_COUNT = 2;
-constexpr int BRIGHTNESS_ENCODER_MULTIPLIER = 4;
-constexpr float SPEED_ENCODER_MULTIPLIER = 0.1f;
+constexpr int BRIGHTNESS_ENCODER_MULTIPLIER = 8;
+constexpr float SPEED_ENCODER_MULTIPLIER = 0.25f;
 
 // Wifi
 constexpr char WIFI_SSID[] = "JamBulb";

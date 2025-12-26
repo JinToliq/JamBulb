@@ -17,9 +17,9 @@ void Input::update() {
     auto encoderDelta = _encoder.readDelta();
     if (encoderDelta  != 0) {
         if (_button.isPressed()) {
-            _brightnessDelta += encoderDelta * BRIGHTNESS_ENCODER_MULTIPLIER;
-        } else {
             _speedDelta += encoderDelta * SPEED_ENCODER_MULTIPLIER;
+        } else {
+            _brightnessDelta += encoderDelta * BRIGHTNESS_ENCODER_MULTIPLIER;
         }
 
         return;

@@ -4,7 +4,7 @@
 
 class StatedButton {
 public:
-    StatedButton(int pin, unsigned long debounceMs, unsigned long clickThresholdMs);
+    StatedButton(int pin, unsigned long debounceMs, unsigned long clickThresholdMs, unsigned long doubleClickThresholdMs);
 
     void update();
     bool isPressed() const { return _isPressed; }
@@ -15,8 +15,11 @@ private:
     const int _pin;
     const unsigned long _debounceMs;
     const unsigned long _clickThresholdMs;
+    const unsigned long _doubleClickThresholdMs;
     unsigned long _lastChangeMs;
     unsigned long _lastStableChangeMs;
+    unsigned long _lastClickMs;
+    unsigned long _lastHandledClickMs;
 
     bool _changedThisFrame;
     bool _isPressed;

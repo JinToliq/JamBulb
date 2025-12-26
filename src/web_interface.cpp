@@ -117,7 +117,7 @@ WebInterface::WebInterface(Input& input, State& state)
 
 void WebInterface::begin() {
     WiFi.mode(WIFI_AP);
-    WiFi.softAP(WIFI_SSID, _state.wifiPassword.c_str());
+    WiFi.softAP(WIFI_SSID, "123456789"); // _state.wifiPassword.c_str());
     
     setupRoutes();
     _server.begin();

@@ -1,9 +1,15 @@
 #include "Controls/stated_button.h"
+#include <debug.h>
 
-StatedButton::StatedButton(int pin, unsigned long debounceMs, unsigned long clickThresholdMs)
-    : _pin(pin), _debounceMs(debounceMs), _clickThresholdMs(clickThresholdMs) {
+StatedButton::StatedButton(int pin, unsigned long debounceMs, unsigned long clickThresholdMs, unsigned long doubleClickThresholdMs)
+    : 
+    _pin(pin), 
+    _debounceMs(debounceMs), 
+    _clickThresholdMs(clickThresholdMs), 
+    _doubleClickThresholdMs(doubleClickThresholdMs) {
     pinMode(pin, INPUT_PULLUP);
     _isPressed = readRaw();
+    _lastClickMs = 0;
 }
 
 bool StatedButton::readRaw() const {
@@ -16,6 +22,9 @@ void StatedButton::update() {
 
     auto raw = readRaw();
     auto now = millis();
+
+    if (raw == _isPressed)
+        return;
 
     if (raw != _lastRaw) {
         _lastRaw = raw;

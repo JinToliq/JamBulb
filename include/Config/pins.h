@@ -12,4 +12,5 @@ constexpr int ENCODER_PIN_A = 2;    // rotary encoder pin A
 constexpr int ENCODER_PIN_B = 4;    // rotary encoder pin B
 
 constexpr int BTN_DEBOUNCE_MS = 50;
-constexpr int BTN_CLICK_THRESHOLD_MS = 500;
+constexpr int BTN_CLICK_THRESHOLD_MS = 300;
+constexpr int BTN_DOUBLECLICK_THRESHOLD_MS = 400;
